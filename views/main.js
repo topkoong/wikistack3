@@ -1,6 +1,10 @@
 const html = require("html-template-tag");
 const layout = require("./layout");
 
+const displayPageItem = (page) => {
+  return html`<li><a href="/wiki/${page.slug}">${page.title}</a></li>`;
+}
+
 module.exports = (pages) => layout(html`
   <h3>Pages</h3>
   <hr>
@@ -10,5 +14,5 @@ module.exports = (pages) => layout(html`
   </form>
   <hr>
   <ul class="list-unstyled">
-      ${pages.map(page => html`<li><a href="/wiki/${page.slug}">${page.title}</a></li>`)}
+      ${pages.map((page) => displayPageItem(page))}
   </ul>`);

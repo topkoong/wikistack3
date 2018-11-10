@@ -3,13 +3,14 @@ const db = new Sequelize('postgres://localhost:5432/wikistack', {
   logging: false
 });
 
-function generateSlug (title) {
+function generateSlug(title) {
   // Removes all non-alphanumeric characters from title
   // And make whitespace underscore
   return title.replace(/\s+/g, '_').replace(/\W/g, '');
 }
 
 const Page = db.define('page', {
+  
   title: {
     type: Sequelize.STRING,
     allowNull: false
@@ -27,6 +28,12 @@ const Page = db.define('page', {
   }
 });
 
+Page.beforeValidate((page) => {
+  if(!page.slug) {
+    page.slug = generateSlug(page.title);
+  }
+})
+
 const User = db.define('user', {
   name: {
     type: Sequelize.STRING,
@@ -41,10 +48,11 @@ const User = db.define('user', {
   }
 });
 
-Page.beforeValidate((page) =>{
-  page.slug = generateSlug(page.title);
-  return page
-})
+Page.belongsTo(User, { as: 'author' });
+User.hasMany(Page, { foreignKey: 'authorId'});
 
-module.exports = { db, Page, User };
-
+module.exports = {
+  db,
+  Page,
+  User
+};
